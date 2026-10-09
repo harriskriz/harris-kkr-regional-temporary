@@ -7,8 +7,7 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 The browser cannot talk to PostgreSQL directly, so a small API in `server/index.mjs` runs the queries and the Angular dev server proxies `/api` to it (`proxy.conf.json`).
 
 1. Copy `.env.example` to `.env` and fill in the database credentials and Google Maps API key (`.env` is git-ignored).
-2. Start the API: `npm run api` (http://localhost:3000)
-3. In another terminal start the app: `npm start` (http://localhost:4200)
+2. Run `npm start`. It starts the API (http://localhost:3000) and the app (http://localhost:4200) together; `npm run api` or `npm run web` start just one.
 
 API endpoints:
 
@@ -17,6 +16,12 @@ API endpoints:
 - `GET /api/config` – the Google Maps API key for the browser
 
 The **Download satellite map & school list** button saves two files per district: a satellite JPEG stitched from Google Maps Static API images (pins, names and a scale bar) and a PNG list of every school with its coordinates. The key needs both the *Maps JavaScript API* and the *Maps Static API* enabled. Run the export on a computer: phone browsers cannot build images this large, though they can open the resulting file.
+
+## Deploying to Vercel
+
+Vercel does not run `server/index.mjs`. It serves the built app and runs each file in `api/` as a Vercel Function; those functions reuse the route code in `server/routes.mjs`, so local and deployed behaviour match. `vercel.json` sets the build output folder.
+
+Before deploying, add these environment variables in the Vercel project (Settings → Environment Variables), because `.env` is not uploaded: `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `GOOGLE_MAPS_API_KEY`. Redeploy after adding them.
 
 ## Development server
 
