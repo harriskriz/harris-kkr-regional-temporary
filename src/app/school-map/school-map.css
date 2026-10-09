@@ -1,0 +1,336 @@
+:host {
+  --sidebar-width: 300px;
+  --slide: 0.3s ease;
+
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* The sidebar animates its width; its content keeps a fixed width so it slides rather than reflows. */
+.sidebar {
+  flex: 0 0 auto;
+  width: var(--sidebar-width);
+  overflow: hidden;
+  border-right: 1px solid #d8dee4;
+  background: #f6f8fa;
+  transition:
+    width var(--slide),
+    border-color var(--slide);
+}
+
+:host(.collapsed) .sidebar {
+  width: 0;
+  border-right-color: transparent;
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  height: 100%;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border-bottom: 1px solid #d8dee4;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.125rem;
+  white-space: nowrap;
+}
+
+h2 {
+  margin: 0;
+  padding: 12px 16px 8px;
+  font-size: 0.875rem;
+  color: #59636e;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: #59636e;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  color: #1f2328;
+  background: #eaeef2;
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #d8dee4;
+}
+
+.controls span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+select,
+input {
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #d1d9e0;
+  border-radius: 6px;
+}
+
+select {
+  cursor: pointer;
+}
+
+select:disabled,
+input:disabled {
+  cursor: not-allowed;
+  background: #f6f8fa;
+}
+
+.export {
+  display: grid;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #d8dee4;
+}
+
+.export-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: #1f883d;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.export-button:hover:not(:disabled) {
+  background: #1a7f37;
+}
+
+.export-button:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.export small {
+  color: #59636e;
+}
+
+.export .export-error {
+  color: #d1242f;
+}
+
+.schools {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.schools ul {
+  margin: 0;
+  padding: 0 8px 8px;
+  list-style: none;
+}
+
+.schools button {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.schools button:hover {
+  background: #eaeef2;
+}
+
+.no-coordinates {
+  padding: 8px 10px;
+  margin: 2px 0;
+  background: #ffebe9;
+  border-radius: 6px;
+}
+
+.no-coordinates small {
+  color: #a40e26;
+}
+
+.schools small {
+  display: block;
+  color: #59636e;
+}
+
+.muted {
+  padding: 8px 10px;
+  color: #59636e;
+}
+
+.map-area {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  background: #e5e3df;
+}
+
+/* Styled to match Google's own map controls. */
+.expand-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 10px 0 0 10px;
+  padding: 0;
+  color: #444;
+  background: #fff;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: rgb(0 0 0 / 30%) 0 1px 4px -1px;
+  cursor: pointer;
+}
+
+/* Fallback position if the map never loads and the button stays in the template. */
+.map-area > .expand-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.expand-button:hover {
+  color: #000;
+}
+
+.expand-button[hidden] {
+  display: none;
+}
+
+/* Styled to match Google's own map controls. */
+.legend {
+  display: flex;
+  gap: 12px;
+  margin: 0 0 10px 10px;
+  padding: 6px 10px;
+  font-size: 0.8125rem;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: rgb(0 0 0 / 30%) 0 1px 4px -1px;
+}
+
+.map-area > .legend {
+  display: none;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.sd {
+  background: #d1242f;
+}
+
+.dot.smp {
+  background: #0969da;
+}
+
+.dot.sma {
+  background: #1a7f37;
+}
+
+.overlay {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+}
+
+.overlay.error {
+  color: #d1242f;
+}
+
+/* Phones: the panel sits above the map and slides up out of view. */
+@media (max-width: 720px) {
+  :host {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: auto;
+    max-height: 45dvh;
+    border-right: 0;
+    border-bottom: 1px solid #d8dee4;
+    transition:
+      max-height var(--slide),
+      border-color var(--slide);
+  }
+
+  :host(.collapsed) .sidebar {
+    width: auto;
+    max-height: 0;
+    border-bottom-color: transparent;
+  }
+
+  .sidebar-inner {
+    width: 100%;
+    max-height: 45dvh;
+  }
+
+  .icon-button svg {
+    transform: rotate(90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
+  }
+}

@@ -1,0 +1,14 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1f2328;
+  background: #ffffff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

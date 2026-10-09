@@ -1,0 +1,148 @@
+<aside class="sidebar" id="district-panel" [attr.inert]="collapsed() ? '' : null" [attr.aria-hidden]="collapsed()">
+  <div class="sidebar-inner">
+    <header>
+      <h1>Schools by district</h1>
+      <button
+        type="button"
+        class="icon-button"
+        aria-label="Collapse panel"
+        title="Collapse panel"
+        aria-controls="district-panel"
+        (click)="collapsed.set(true)"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z" fill="currentColor" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="controls">
+      <label>
+        <span>District</span>
+        <select
+          [disabled]="loadingDistricts()"
+          [value]="selectedDistrict() ?? ''"
+          (change)="selectDistrict($any($event.target).value)"
+        >
+          <option value="" disabled>
+            {{ loadingDistricts() ? 'Loading districts…' : 'Choose a district' }}
+          </option>
+          @for (district of districts(); track district) {
+            <option [value]="district">{{ district }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>School</span>
+        <input
+          type="search"
+          placeholder="Search school name or level…"
+          [disabled]="!selectedDistrict() || loadingSchools()"
+          [value]="schoolQuery()"
+          (input)="schoolQuery.set($any($event.target).value)"
+        />
+      </label>
+    </div>
+
+    @if (selectedDistrict() && !loadingSchools() && schools().length) {
+      <div class="export">
+        <button
+          type="button"
+          class="export-button"
+          [disabled]="!exportPlan() || exportProgress()"
+          (click)="downloadSatelliteMap()"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M5 20h14v-2H5v2Zm7-3 5-5-1.4-1.4-2.6 2.6V4h-2v9.2l-2.6-2.6L7 12l5 5Z" fill="currentColor" />
+          </svg>
+          @if (exportProgress(); as p) {
+            {{ p.done < p.total ? 'Downloading imagery ' + p.done + '/' + p.total + '…' : 'Building image…' }}
+          } @else {
+            Download satellite map &amp; school list
+          }
+        </button>
+        @if (exportPlan(); as plan) {
+          <small>
+            Zoom {{ plan.zoom }} · about {{ plan.mapWidth | number }} × {{ plan.mapHeight | number }} px ·
+            {{ plan.cols * plan.rows }} imagery requests
+          </small>
+        } @else {
+          <small>No schools in this district have coordinates.</small>
+        }
+        @if (exportError()) {
+          <small class="export-error" role="alert">{{ exportError() }}</small>
+        }
+      </div>
+    }
+
+    @if (selectedDistrict() && !loadingSchools()) {
+      <section class="schools">
+        <h2>
+          @if (schoolQuery().trim()) {
+            {{ filteredSchools().length }} of {{ schools().length }} schools in {{ selectedDistrict() }}
+          } @else {
+            {{ schools().length }} {{ schools().length === 1 ? 'school' : 'schools' }} in {{ selectedDistrict() }}
+          }
+        </h2>
+        <ul>
+          @for (school of filteredSchools(); track school.id) {
+            <li>
+              @if (hasCoordinates(school)) {
+                <button type="button" (click)="focusSchool(school)">
+                  <span>{{ school.name }}</span>
+                  @if (school.level) {
+                    <small>{{ school.level }}</small>
+                  }
+                </button>
+              } @else {
+                <div class="no-coordinates" title="This school has no coordinates, so it is not on the map">
+                  <span>{{ school.name }}</span>
+                  <small>{{ school.level ? school.level + ' · ' : '' }}No coordinates</small>
+                </div>
+              }
+            </li>
+          } @empty {
+            <li class="muted">No schools match “{{ schoolQuery() }}”.</li>
+          }
+        </ul>
+      </section>
+    }
+  </div>
+</aside>
+
+<main class="map-area">
+  <div #map class="map"></div>
+
+  <!-- Moved into the map's bottom-left controls once the map loads. -->
+  <div #legend class="legend" aria-label="Pin colors">
+    <span><i class="dot sd"></i>SD</span>
+    <span><i class="dot smp"></i>SMP</span>
+    <span><i class="dot sma"></i>SMA / SMK</span>
+  </div>
+
+  <!-- Moved into the map's top-left controls once the map loads. -->
+  <button
+    #expandButton
+    type="button"
+    class="expand-button"
+    aria-label="Show district panel"
+    title="Show district panel"
+    aria-controls="district-panel"
+    [attr.aria-expanded]="!collapsed()"
+    [hidden]="!collapsed()"
+    (click)="collapsed.set(false)"
+  >
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" fill="currentColor" />
+    </svg>
+  </button>
+
+  @if (error()) {
+    <div class="overlay error" role="alert">{{ error() }}</div>
+  } @else if (!selectedDistrict()) {
+    <div class="overlay">Choose a district to see its schools on the map.</div>
+  } @else if (loadingSchools()) {
+    <div class="overlay">Loading schools in {{ selectedDistrict() }}…</div>
+  }
+</main>
